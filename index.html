@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mystic Oracle - AI Fortune Teller</title>
+    <style>
+        :root {
+            --primary: #6d28d9;
+            --secondary: #9333ea;
+            --dark: #1e1b4b;
+            --light: #f5f3ff;
+            --accent: #a78bfa;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--dark);
+            color: var(--light);
+            min-height: 100vh;
+            background-image: radial-gradient(circle at 10% 20%, rgba(109, 40, 217, 0.2) 0%, rgba(30, 27, 75, 1) 90%);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+            position: relative;
+        }
+        
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(to right, var(--accent), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            font-weight: 800;
+        }
+        
+        .slogan {
+            font-style: italic;
+            color: var(--accent);
+            margin-bottom: 2rem;
+        }
+        
+        .divination-methods {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem;
+            justify-content: center;
+            margin-bottom: 3rem;
+        }
+        
+        .method-card {
+            background: rgba(30, 27, 75, 0.7);
+            border: 1px solid var(--primary);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            width: 300px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        
+        .method-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(109, 40, 217, 0.3);
+        }
+        
+        .method-card h3 {
+            color: var(--secondary);
+            margin-bottom: 1rem;
+        }
+        
+        .method-card p {
+            color: var(--accent);
+            font-size: 0.9rem;
+        }
+        
+        .method-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--secondary);
+        }
+        
+        .reading-container {
+            background: rgba(30, 27, 75, 0.7);
+            border: 1px solid var(--primary);
+            border-radius: 1rem;
+            padding: 2rem;
+            margin-top: 2rem;
+        }
+        
+        .question-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        textarea {
+            background: rgba(30, 27, 75, 0.5);
+            border: 1px solid var(--primary);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            color: var(--light);
+            font-size: 1rem;
+            resize: vertical;
+            min-height: 100px;
+        }
+        
+        textarea::placeholder {
+            color: var(--accent);
+            opacity: 0.7;
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .form-group {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--accent);
+        }
+        
+        input, select {
+            background: rgba(30, 27, 75, 0.5);
+            border: 1px solid var(--primary);
+            border-radius: 0.5rem;
+            padding: 0.75rem;
+            color: var(--light);
+            font-size: 1rem;
+            width: 100%;
+        }
+        
+        button {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            padding: 1rem 2rem;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(109, 40, 217, 0.4);
+        }
+        
+        .result {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: rgba(30, 27, 75, 0.5);
+            border: 1px solid var(--primary);
+            border-radius: 0.5rem;
+            display: none;
+        }
+        
+        .result h3 {
+            color: var(--secondary);
+            margin-bottom: 1rem;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 2rem 0;
+        }
+        
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            border-top: 4px solid var(--secondary);
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .disclaimer {
+            margin-top: 3rem;
+            padding: 1rem;
+            background: rgba(30, 27, 75, 0.3);
+            border: 1px solid var(--primary);
+            border-radius: 0.5rem;
+            font-size: 0.8rem;
+            color: var(--accent);
+            text-align: center;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--primary);
+            color: var(--accent);
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .divination-methods {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .method-card {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Mystic Oracle</h1>
+            <p class="slogan">We don't ask you to trust us - you came to us to trust us</p>
+        </header>
+        
+        <div class="divination-methods">
+            <div class="method-card" onclick="selectMethod('tarot')">
+                <div class="method-icon">🃏</div>
+                <h3>Tarot Reading</h3>
+                <p>Gain insights into your current situation and future possibilities through the ancient art of tarot.</p>
+            </div>
+            
+            <div class="method-card" onclick="selectMethod('astrology')">
+                <div class="method-icon">♈</div>
+                <h3>Astrology</h3>
+                <p>Discover how celestial bodies influence your life path and personal relationships.</p>
+            </div>
+            
+            <div class="method-card" onclick="selectMethod('numerology')">
+                <div class="method-icon">🔢</div>
+                <h3>Numerology</h3>
+                <p>Uncover the hidden meanings in numbers that shape your destiny and personality.</p>
+            </div>
+        </div>
+        
+        <div class="reading-container" id="readingForm">
+            <h2>Ask the Oracle</h2>
+            <form class="question-form" id="fortuneForm">
+                <div class="form-group">
+                    <label for="method">Divination Method</label>
+                    <select id="method" required>
+                        <option value="">Select a method</option>
+                        <option value="tarot">Tarot Reading</option>
+                        <option value="astrology">Astrology</option>
+                        <option value="numerology">Numerology</option>
+                        <option value="general">General Fortune Telling</option>
+                    </select>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="name">Your Name (Optional)</label>
+                        <input type="text" id="name" placeholder="Enter your name">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="birthdate">Birthdate (Optional)</label>
+                        <input type="date" id="birthdate">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="question">Your Question</label>
+                    <textarea id="question" placeholder="Ask the oracle anything..." required></textarea>
+                </div>
+                
+                <button type="submit">Receive Your Fortune</button>
+            </form>
+        </div>
+        
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>The oracle is consulting the cosmos...</p>
+        </div>
+        
+        <div class="result" id="result">
+            <h3>Your Fortune</h3>
+            <div id="fortuneText"></div>
+        </div>
+        
+        <div class="disclaimer">
+            <p>Disclaimer: Our AI services provide fortune telling for entertainment and informational purposes only. The predictions and guidance offered are not substitutes for professional advice, and we do not guarantee the accuracy, completeness, or reliability of the information provided.</p>
+        </div>
+        
+        <footer>
+            <p>© 2025 Mystic Oracle | AI-Powered Divination</p>
+        </footer>
+    </div>
+    
+    <script>
+        // Select divination method from cards
+        function selectMethod(method) {
+            document.getElementById('method').value = method;
+            document.getElementById('readingForm').scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        // Handle form submission
+        document.getElementById('fortuneForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const method = document.getElementById('method').value;
+            const name = document.getElementById('name').value;
+            const birthdate = document.getElementById('birthdate').value;
+            const question = document.getElementById('question').value;
+            
+            // Show loading spinner
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('result').style.display = 'none';
+            
+            try {
+                // Prepare the prompt with fine-tuning for fortune telling
+                let prompt = `You are Mystic Oracle, an AI fortune teller. A user is seeking guidance about their life or future. `;
+                
+                if (name) prompt += `The user's name is ${name}. `;
+                if (birthdate) prompt += `They were born on ${birthdate}. `;
+                
+                prompt += `They are asking: "${question}". `;
+                
+                // Add method-specific context
+                switch(method) {
+                    case 'tarot':
+                        prompt += `Provide a tarot card reading. Mention 3 cards that represent their past, present, and future. Interpret these cards in relation to their question. Include mystical symbolism and practical advice.`;
+                        break;
+                    case 'astrology':
+                        prompt += `Provide an astrological reading. Analyze their current planetary transits (even if no birthdate is provided, give general astrological advice). Relate this to their question and offer cosmic guidance.`;
+                        break;
+                    case 'numerology':
+                        prompt += `Provide a numerological reading. Calculate their life path number (if birthdate is provided) or analyze the numbers in their question. Offer insights based on numerology.`;
+                        break;
+                    default:
+                        prompt += `Provide a mystical fortune telling response. Combine intuitive wisdom with practical advice. Speak in a prophetic yet compassionate tone.`;
+                }
+                
+                prompt += ` Remember: Be insightful but not deterministic. Offer guidance while emphasizing free will. Maintain a mystical tone but keep it accessible.`;
+                
+                // Call the API
+                const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+                    method: "POST",
+                    headers: {
+                        "Authorization": "Bearer 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",
+                        "HTTP-Referer": "https://mystic-oracle.example.com",
+                        "X-Title": "Mystic Oracle",
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        "model": "deepseek/deepseek-r1-0528:free",
+                        "messages": [
+                            {
+                                "role": "system",
+                                "content": "You are Mystic Oracle, an AI fortune teller with access to ancient wisdom and intuitive insights. You provide guidance through tarot, astrology, numerology, and general fortune telling. Your responses are mystical yet practical, offering both spiritual perspective and actionable advice. You emphasize free will while revealing potential paths."
+                            },
+                            {
+                                "role": "user",
+                                "content": prompt
+                            }
+                        ],
+                        "temperature": 0.7,
+                        "max_tokens": 1000
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.choices && data.choices[0].message.content) {
+                    document.getElementById('fortuneText').innerHTML = formatFortuneText(data.choices[0].message.content);
+                    document.getElementById('result').style.display = 'block';
+                } else {
+                    throw new Error('No fortune received');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('fortuneText').innerHTML = `<p>The cosmic energies are unclear at this moment. Please try again later.</p>`;
+                document.getElementById('result').style.display = 'block';
+            } finally {
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('result').scrollIntoView({ behavior: 'smooth' });
+            }
+        });
+        
+        // Format the fortune text with line breaks and styling
+        function formatFortuneText(text) {
+            // Replace double newlines with paragraphs
+            let formatted = text.replace(/\n\n/g, '</p><p>');
+            // Replace single newlines with line breaks
+            formatted = formatted.replace(/\n/g, '<br>');
+            // Wrap in paragraph tags
+            return `<p>${formatted}</p>`;
+        }
+    </script>
+</body>
+</html>
